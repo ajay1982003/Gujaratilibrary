@@ -110,6 +110,31 @@ $issueHistory = $bookingIssueController->getIssueHistory();
 
 
 
+    <!-- Return Book Modal -->
+    <div class="modal fade" id="returnBookModal" tabindex="-1" role="dialog" aria-labelledby="returnBookModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="returnBookModalLabel">Return Book</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="returnBookForm">
+              <input type="hidden" id="returnBookId" value="">
+              <div class="mb-3">
+                <label class="form-label" for="returnDate">પરત કરવાની તારીખ (Return Date)</label>
+                <input type="date" class="form-control" id="returnDate" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitReturnBook()">Return Book</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="./vendor/js/bootstrap.js"></script>
     
@@ -126,22 +151,86 @@ $issueHistory = $bookingIssueController->getIssueHistory();
 
         $('document').ready(function(){
 
-          $('#historyTable').DataTable( {
-    ajax: {
-        url: './api/search-book-history.php',
-        dataSrc: 'data'
-    },
-    columns: [ 
-            { data: 'book_id' },
-            { data: 'book_name' },
-            { data: 'issued_to' },
-            { data: 'issue_date' },
-            { data: 'return_date' },
-            { data: 'status' },
-           
+          var table = $('#historyTable').DataTable( {
+            ajax: {
+                url: './api/search-book-history.php',
+                dataSrc: 'data'
+            },
+            columns: [ 
+                    { data: 'sr_no' },
+                    { data: 'book_name' },
+                    { data: 'issued_to' },
+                    { data: 'issue_date' },
+                    { data: 'return_date' },
+                    { 
+                      data: null,
+                      render: function(data, type, row) {
+                        if (row.status === 'Issued') {
+                          let html = '<div class="dropdown">';
+                          html += '<button type="button" class=" badge bg-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
+                          html += 'Issued';
+                          html += '</button>';
+                          html += '<ul class="dropdown-menu">';
+                          html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="openReturnModal(' + row.book_id + ')">Return Book</a></li>';
+                          html += '</ul>';
+                          html += '</div>';
+                          return html;
+                        } else {
+                          return '<span class="badge ' + row.status_class + '">' + row.status + '</span>';
+                        }
+                      }
+                    }
+            ]
+        } );
 
-    ]
-} );
+        window.openReturnModal = function(bookId) {
+            document.getElementById('returnBookId').value = bookId;
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('returnDate').value = today;
+            const modal = new bootstrap.Modal(document.getElementById('returnBookModal'));
+            modal.show();
+        };
+
+        window.submitReturnBook = function() {
+            const bookId = document.getElementById('returnBookId').value;
+            const returnDate = document.getElementById('returnDate').value;
+
+            if (!bookId || !returnDate) {
+              alert('Please select a return date');
+              return;
+            }
+
+            const formData = new FormData();
+            formData.append('book_id', bookId);
+            formData.append('status', 'available'); 
+            formData.append('return_date', returnDate);
+
+            fetch('./api/update-book-status.php', {
+              method: 'POST',
+              body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+              if (data.success) {
+                // Close modal
+                const modalElement = document.getElementById('returnBookModal');
+                const modal = bootstrap.Modal.getInstance(modalElement);
+                if (modal) {
+                  modal.hide();
+                }
+                
+                table.ajax.reload();
+                alert('Book returned successfully');
+              } else {
+                alert('Error: ' + data.message);
+              }
+            })
+            .catch(error => {
+              console.error('Error:', error);
+              alert('Error returning book');
+            });
+        };
 
         });
 

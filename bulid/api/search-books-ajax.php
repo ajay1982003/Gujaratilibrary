@@ -52,13 +52,15 @@ if (!empty($books)) {
             'naam' => htmlspecialchars($book['naam'] ?? $book['name'] ?? 'N/A'),
             'granthkar' => htmlspecialchars($book['granthkar'] ?? 'N/A'),
             'subject_name' => htmlspecialchars($book['subject_name'] ?? 'N/A'),
+            'available_status' => $status,
+            'status' => $badgeText,
+            'status_class' => $badgeClass,
             'prakashak' => htmlspecialchars($book['prakashak_0811'] ?? 'N/A'),
             'bhasha' => htmlspecialchars($book['bhasha'] ?? 'N/A'),
             'pages' => $book['pages'] ?? 'N/A',
-            'category' => htmlspecialchars($book['categoryName'] ?? 'N/A'),
-            'status' => $badgeText,
-            'status_class' => $badgeClass,
-            'available_status' => $status
+            'category' => htmlspecialchars($book['categoryName'] ?? 'N/A')
+            
+            
         ];
         
         $sr_no++;
@@ -73,4 +75,6 @@ echo json_encode([
     'data' => $data,
     'search' => $search_value
 ]);
+
+
 ?>

@@ -1,14 +1,14 @@
 <!-- Menu -->
 <?php
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+  session_start();
 }
 require_once __DIR__ . '/../app/helpers/SessionHelper.php';
 
 $username = SessionHelper::getUsername();
 $email = SessionHelper::getUserEmail();
 ?>
-<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
+<aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme ">
   <div class="app-brand demo">
     <a href="index.php" class="app-brand-link">
       <span class="app-brand-logo demo">
@@ -38,7 +38,8 @@ $email = SessionHelper::getUserEmail();
       </a>
     </li>
     <li class="menu-divider"></li>
-    <?php endif; ?>
+    <?php
+endif; ?>
 
     <!-- Dashboard -->
     <li class="menu-item">
@@ -66,6 +67,14 @@ $email = SessionHelper::getUserEmail();
       <a href="book-history.php" class="menu-link">
         <i class="menu-icon tf-icons bx bx-history"></i>
         <div data-i18n="Book History">Book History</div>
+      </a>
+    </li>
+
+       <!-- Users-->
+    <li class="menu-item">
+      <a href="users.php" class="menu-link">
+        <i class="menu-icon tf-icons bx bx-user"></i>
+        <div data-i18n="Users">Users</div>
       </a>
     </li>
 

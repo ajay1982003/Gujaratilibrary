@@ -42,6 +42,14 @@ class book
         return $result['total'];    
     }
 
+    public function getissuedBooks()
+    {
+        $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM books WHERE available_status='issued'");
+        $stmt->execute();
+      
+        return $stmt->fetchAll(PDO::FETCH_ASSOC); ;
+    }
+
     public function getavailableBooks()
     {
         $stmt = $this->db->prepare("SELECT COUNT(*) as total FROM books WHERE available_status='available'");
@@ -98,6 +106,15 @@ class book
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
         return $result['total'];
+    }
+
+
+    public function getbookbyid($id)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM books WHERE id = :id");
+        $stmt->bindValue(':id', (int)$id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 }
 

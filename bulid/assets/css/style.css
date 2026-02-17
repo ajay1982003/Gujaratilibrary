@@ -1,1 +1,41 @@
+
+/* Single Book History Page Styles */
+.container {
+	max-width: 900px;
+}
+h2 {
+	color: #2c3e50;
+	font-weight: 600;
+}
+.card {
+	box-shadow: 0 2px 8px rgba(44,62,80,0.08);
+	border-radius: 8px;
+}
+.card-header {
+	background: #f8f9fa;
+	border-bottom: 1px solid #e3e6ea;
+}
+.table th, .table td {
+	vertical-align: middle;
+}
+.badge-success {
+	background-color: #28a745;
+}
+.badge-warning {
+	background-color: #ffc107;
+	color: #212529;
+}
+.alert-info, .alert-warning {
+	margin-top: 1rem;
+}
+.form-label {
+	font-weight: 500;
+}
+.btn-primary {
+	background-color: #007bff;
+	border: none;
+}
+.btn-primary:hover {
+	background-color: #0056b3;
+}
  

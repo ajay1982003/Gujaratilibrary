@@ -132,16 +132,16 @@ $book = $controller->getAllBooks();
                     <thead>
                       <tr>
                         <th>Sr No</th>
+                        <th><i class='bx bx-history'></i></th>
                         <th>નામ (Title)</th>
                         <th>ગ્રંથકાર (Author)</th>
                         <th>વિષય (Subject)</th>
                         <th>પ્રકાશક (Publisher)</th>
+                        <th>Status</th>
                         <th>ભાષા (Language)</th>
                         <th>Pages</th>
                         <th>Subject Name</th>
                         <th>Category</th>
-                        <th>Issued Status</th>
-                        <th>Booking History</th>
                       </tr>
                     </thead>
                     <tbody id="booksTableBody">
@@ -188,8 +188,8 @@ $book = $controller->getAllBooks();
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <?php
-          
-          ?>
+
+?>
           <div class="modal-header">
             <h5 class="modal-title" id="issueBookModalLabel">Issue Book of </h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -205,11 +205,44 @@ $book = $controller->getAllBooks();
                 <label class="form-label" for="issuedPhone">ફોન નંબર (Phone Number)</label>
                 <input type="tel" class="form-control" id="issuedPhone" placeholder="ફોન નંબર દાખલ કરો" required />
               </div>
+              <div class="mb-3">
+                <label class="form-label" for="issuedEmail">ઇમેઇલ (Email)</label>
+                <input type="email" class="form-control" id="issuedEmail" placeholder="ઇમેઇલ દાખલ કરો" />
+              </div>
+              <div class="mb-3">
+                <label class="form-label" for="issuedDate">ઇશ્યૂ તારીખ (Issue Date)</label>
+                <input type="date" class="form-control" id="issuedDate" required />
+              </div>
             </form>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
             <button type="button" class="btn btn-primary" onclick="submitIssueBook()">Issue Book</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Return Book Modal -->
+    <div class="modal fade" id="returnBookModal" tabindex="-1" role="dialog" aria-labelledby="returnBookModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="returnBookModalLabel">Return Book</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="returnBookForm">
+              <input type="hidden" id="returnBookId" value="">
+              <div class="mb-3">
+                <label class="form-label" for="returnDate">પરત કરવાની તારીખ (Return Date)</label>
+                <input type="date" class="form-control" id="returnDate" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitReturnBook()">Return Book</button>
           </div>
         </div>
       </div>
@@ -263,6 +296,11 @@ $book = $controller->getAllBooks();
         document.getElementById('issueBookId').value = bookId;
         document.getElementById('issuedName').value = '';
         document.getElementById('issuedPhone').value = '';
+        document.getElementById('issuedEmail').value = '';
+        
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('issuedDate').value = today;
         
         const modal = new bootstrap.Modal(document.getElementById('issueBookModal'));
         modal.show();
@@ -272,9 +310,11 @@ $book = $controller->getAllBooks();
         const bookId = document.getElementById('issueBookId').value;
         const issuedName = document.getElementById('issuedName').value.trim();
         const issuedPhone = document.getElementById('issuedPhone').value.trim();
+        const issuedEmail = document.getElementById('issuedEmail').value.trim();
+        const issuedDate = document.getElementById('issuedDate').value;
 
-        if (!bookId || !issuedName || !issuedPhone) {
-          alert('Please fill in all fields');
+        if (!bookId || !issuedName || !issuedPhone || !issuedDate) {
+          alert('Please fill in all required fields');
           return;
         }
 
@@ -283,6 +323,8 @@ $book = $controller->getAllBooks();
         formData.append('status', 'issued');
         formData.append('issued_to', issuedName);
         formData.append('issued_to_contact', issuedPhone);
+        formData.append('issued_to_email', issuedEmail);
+        formData.append('issue_date', issuedDate);
 
         fetch('./api/update-book-status.php', {
           method: 'POST',
@@ -310,6 +352,55 @@ $book = $controller->getAllBooks();
         });
       }
 
+      function openReturnModal(bookId) {
+        document.getElementById('returnBookId').value = bookId;
+        // Set default date to today
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('returnDate').value = today;
+        const modal = new bootstrap.Modal(document.getElementById('returnBookModal'));
+        modal.show();
+      }
+
+      function submitReturnBook() {
+        const bookId = document.getElementById('returnBookId').value;
+        const returnDate = document.getElementById('returnDate').value;
+
+        if (!bookId || !returnDate) {
+          alert('Please select a return date');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('book_id', bookId);
+        formData.append('status', 'available'); 
+        formData.append('return_date', returnDate);
+
+        fetch('./api/update-book-status.php', {
+          method: 'POST',
+          body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            // Close modal
+            const modalElement = document.getElementById('returnBookModal');
+            const modal = bootstrap.Modal.getInstance(modalElement);
+            if (modal) {
+              modal.hide();
+            }
+            
+            dataTable.ajax.reload();
+            alert('Book returned successfully');
+          } else {
+            alert('Error: ' + data.message);
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Error returning book');
+        });
+      }
+
       // Initialize DataTable
       $(document).ready(function() {
         dataTable = $('#booksTable').DataTable({
@@ -329,16 +420,17 @@ $book = $controller->getAllBooks();
           },
           columns: [
             { data: 'sr_no', orderable: false },
+            {
+              data: null,
+              render: function(data, type, row) {
+                return '<a href="single-book-history.php?book_id=' + row.id + '" class="text-secondary" title="View History"><i class="bx bx-history bx-sm"></i></a>';
+              },
+              orderable: false
+            },
             { data: 'naam' },
             { data: 'granthkar' },
             { data: 'subject_name' },
             { data: 'prakashak' },
-            { data: 'bhasha' },
-            { data: 'pages' },
-            { data: 'subject_name' },
-            { 
-               data: 'category'
-            },
             {
               data: null,
               render: function(data, type, row) {
@@ -348,7 +440,7 @@ $book = $controller->getAllBooks();
                 html += '</button>';
                 html += '<ul class="dropdown-menu">';
                 if(row.available_status === 'issued'){
-                  html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="changeBookStatus(' + row.id + ', \'available\')">Available</a></li>';
+                  html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="openReturnModal(' + row.id + ')">Mark is Return</a></li>';
                 } else {
                   html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="openIssueModal(' + row.id + ')">Issued</a></li>';
                 }
@@ -358,12 +450,11 @@ $book = $controller->getAllBooks();
               },
               orderable: false
             },
-            {
-              data: null,
-              render: function(data, type, row) {
-                return '<a href="book-history.php?book_id=' + row.id + '" class="btn btn-sm btn-info">View History</a>';
-              },
-              orderable: false
+            { data: 'bhasha' },
+            { data: 'pages' },
+            { data: 'subject_name' },
+            { 
+               data: 'category'
             }
           ],
           drawCallback: function() {

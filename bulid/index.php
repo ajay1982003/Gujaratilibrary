@@ -4,17 +4,22 @@ session_start();
 require_once __DIR__ . '/app/controllers/BookController.php';
 require_once __DIR__ . '/app/models/BookIssue.php';
 require_once __DIR__ . '/app/helpers/SessionHelper.php';
+require_once __DIR__ . '/app/controllers/BookingissueController.php';
 
 // Check if user is logged in
 SessionHelper::requireLogin();
 
 $controller = new BookController();
-$bookissue = new BookIssue();
+$bookissue = new BookingissueController();
 $countbooks = $controller->getTotalBooks();
 $issuedbooks = $controller->getissuedtotalbooks();
 $availablebooks = $controller->getavailableBooks();
 
-$issueHistory = $bookissue->getIssueHistory();
+$issueHistory = $bookissue->getissuedBooks();
+
+
+
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -200,42 +205,59 @@ $issueHistory = $bookissue->getIssueHistory();
                           </tr>
                         </thead>
                         <tbody>
-                         <?php
-                      if (!empty($issueHistory)) {
-                          $sr_no = 1;
-                          $count = 0;
-                          foreach ($issueHistory as $record) {
-                                if($count >= 5) break; // Show only the 5 most recent records
-                              $book_name = htmlspecialchars($record['book_name'] ?? 'Unknown');
-                              $issued_to = htmlspecialchars($record['issued_to'] ?? 'N/A');
-                              $issue_date = date('Y-m-d', strtotime($record['issue_date']));
-                              $expected_return = date('Y-m-d', strtotime($record['expected_return_date']));
-                              $actual_return = $record['actual_return_date'] ? date('Y-m-d', strtotime($record['actual_return_date'])) : '—';
-                              $status = strtolower($record['status'] ?? 'issued');
-                              
-                              $badgeClass = ($status === 'returned') ? 'bg-label-success' : 'bg-label-warning';
-                              $badgeText = ucfirst($status);
-                      ?>
-                      <tr>
-                        <td><?php echo $sr_no; ?></td>
-                        <td><strong><?php echo $book_name; ?></strong></td>
-                        <td><?php echo $issued_to; ?></td>
-                        <td><?php echo $issue_date; ?></td>
-                        <td><?php echo $actual_return; ?></td>
-                        <td><span class="badge <?php echo $badgeClass; ?> me-1"><?php echo $badgeText; ?></span></td>
-                      </tr>
-                      <?php
-                              $sr_no++;
-                              $count++;
-                          }
-                        } else {
-                        ?>
+                          <?php
+if (!empty($issueHistory)) {
+  $sr_no = 1;
+  $count = 0;
+  foreach ($issueHistory as $record) {
+    if ($count >= 5)
+      break; // Show only the 5 most recent records
+
+    $book_name = htmlspecialchars($record['book_name'] ?? 'Unknown');
+    $issued_to = htmlspecialchars($record['issued_to'] ?? 'N/A');
+    $issue_date = date('Y-m-d', strtotime($record['issue_date']));
+    $actual_return = $record['actual_return_date'] ? date('Y-m-d', strtotime($record['actual_return_date'])) : '—';
+    $status = strtolower($record['status'] ?? 'issued');
+
+    $badgeClass = ($status === 'returned') ? 'bg-label-success' : 'bg-label-warning';
+    $badgeText = ucfirst($status);
+?>
+                              <tr>
+                                <td><?php echo $sr_no; ?></td>
+                                <td><strong><?php echo $book_name; ?></strong></td>
+                                <td><?php echo $issued_to; ?></td>
+                                <td><?php echo $issue_date; ?></td>
+                                <td><?php echo $actual_return; ?></td>
+                                <td>
+                                  <?php if ($status === 'issued'): ?>
+                                    <div class="dropdown">
+                                      <button type="button" class="btn btn-sm btn-label-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                        Issued
+                                      </button>
+                                      <ul class="dropdown-menu">
+                                        <li><a class="dropdown-item" href="javascript:void(0);" onclick="openReturnModal(<?php echo $record['book_id']; ?>)">Return Book</a></li>
+                                      </ul>
+                                    </div>
+                                  <?php
+    else: ?>
+                                    <span class="badge <?php echo $badgeClass; ?> me-1"><?php echo $badgeText; ?></span>
+                                  <?php
+    endif; ?>
+                                </td>
+                              </tr>
+                          <?php
+    $sr_no++;
+    $count++;
+  }
+}
+else {
+?>
                         <tr>
                           <td colspan="6" class="text-center text-muted py-4">No book issue history found</td>
                         </tr>
-                        <?php
-                        }
-                      ?>
+<?php
+}
+?>
                         </tbody>
                       </table>
                     </div>
@@ -289,6 +311,31 @@ $issueHistory = $bookissue->getIssueHistory();
 
       <!-- Overlay -->
       <div class="layout-overlay layout-menu-toggle"></div>
+    </div>
+
+    <!-- Return Book Modal -->
+    <div class="modal fade" id="returnBookModal" tabindex="-1" role="dialog" aria-labelledby="returnBookModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="returnBookModalLabel">Return Book</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="returnBookForm">
+              <input type="hidden" id="returnBookId" value="">
+              <div class="mb-3">
+                <label class="form-label" for="returnDate">પરત કરવાની તારીખ (Return Date)</label>
+                <input type="date" class="form-control" id="returnDate" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitReturnBook()">Return Book</button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Bootstrap JS -->

@@ -15,12 +15,13 @@ $bookingIssueController = new BookingissueController();
 $issueHistory = $bookingIssueController->getIssueHistory();
 
 $data = [];
+$sr_no = 1;
 if (!empty($issueHistory)) {
     foreach ($issueHistory as $issue) {
-
-         $status = $issue['available_status'] ?? 'available';
+        $issue['sr_no'] = $sr_no++;
+        $status = $issue['status'] ?? 'returned';
         $badgeClass = ($status === 'issued') ? 'bg-label-warning' : 'bg-label-success';
-        $badgeText = ($status === 'issued') ? 'Issued' : 'Available';
+        $badgeText = ($status === 'issued') ? 'Issued' : 'Returned';
         $data[] = [
             'book_id' => $issue['book_id'] ?? 'N/A',
             'book_name' => htmlspecialchars($issue['book_name'] ?? 'N/A'),
@@ -30,6 +31,7 @@ if (!empty($issueHistory)) {
             'return_date' => htmlspecialchars($issue['actual_return_date'] ?? 'N/A'),
             'status' => $badgeText,
             'status_class' => $badgeClass,
+            'sr_no' => $issue['sr_no']
         ];
     }
 }

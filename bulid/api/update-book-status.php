@@ -42,13 +42,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         $db = (new Database())->connect();
-        
+
         // Update book status
         $result = $bookIssue->updateBookStatus($book_id, $status);
 
         if ($result) {
             // If status is 'issued', also add to book_issue table
             if ($status === 'issued') {
+                $issued_to_email = isset($_POST['issued_to_email']) ? trim($_POST['issued_to_email']) : null;
+                $issue_date = isset($_POST['issue_date']) ? trim($_POST['issue_date']) : null;
+
                 if (!$issued_to || !$issued_to_contact) {
                     echo json_encode([
                         'success' => false,
@@ -57,58 +60,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     exit;
                 }
 
-                $issue_result = $bookIssue->issueBook($book_id, $issued_to, $issued_to_contact);
-                
+                $issue_result = $bookIssue->issueBook($book_id, $issued_to, $issued_to_contact, $issued_to_email, $issue_date);
+
                 if ($issue_result) {
                     echo json_encode([
                         'success' => true,
                         'message' => 'Book issued successfully'
                     ]);
-                } else {
+                }
+                else {
                     echo json_encode([
                         'success' => false,
                         'message' => 'Book status updated but failed to create issue record'
                     ]);
                 }
-            } else if ($status === 'available') {
-                // When changing to available, mark pending issued book as returned
-                $returnSql = "SELECT id FROM book_issue WHERE book_id = :book_id AND status = 'issued' AND actual_return_date IS NULL ORDER BY issue_date DESC LIMIT 1";
-                $returnStmt = $db->prepare($returnSql);
-                $returnStmt->bindValue(':book_id', $book_id, PDO::PARAM_INT);
-                $returnStmt->execute();
-                $issueRecord = $returnStmt->fetch(PDO::FETCH_ASSOC);
+            }
+            else if ($status === 'available') {
+                $return_date = isset($_POST['return_date']) ? trim($_POST['return_date']) : null;
 
-                if ($issueRecord) {
-                    // Update the issue record to mark as returned
-                    $updateReturnSql = "UPDATE book_issue SET actual_return_date = NOW(), status = 'returned' WHERE id = :id";
-                    $updateReturnStmt = $db->prepare($updateReturnSql);
-                    $updateReturnStmt->bindValue(':id', $issueRecord['id'], PDO::PARAM_INT);
-                    $updateReturnStmt->execute();
-                }
+                // Use the model method to return the book
+                $result = $bookIssue->returnBook($book_id, $return_date);
 
                 echo json_encode([
                     'success' => true,
                     'message' => 'Book marked as available and returned record updated'
                 ]);
-            } else {
+            }
+            else {
                 echo json_encode([
                     'success' => true,
                     'message' => 'Book status updated successfully'
                 ]);
             }
-        } else {
+        }
+        else {
             echo json_encode([
                 'success' => false,
                 'message' => 'Failed to update book status'
             ]);
         }
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
         echo json_encode([
             'success' => false,
             'message' => 'Error: ' . $e->getMessage()
         ]);
     }
-} else {
+}
+else {
     echo json_encode([
         'success' => false,
         'message' => 'Only POST method is allowed'

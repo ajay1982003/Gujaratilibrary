@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../core/database.php';
-require_once __DIR__ . '/../models/Bookissue.php';
+require_once __DIR__ . '/../models/BookIssue.php';
 class BookingissueController
 {
     private $bookingIssueModel;
@@ -34,6 +34,17 @@ class BookingissueController
     {
        return $this->bookingIssueModel->updateBookStatus($issue_id, 'available');
     }
+
+       public function getissuedBooks()
+    {
+        return $this->bookingIssueModel->getissuedBooks();
+    }
+
+    public function  getIssueHistoryByBookId($book_id)
+    {
+        return $this->bookingIssueModel->singleIssueHistory($book_id);
+    }
+ 
     
 }
 

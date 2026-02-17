@@ -16,6 +16,13 @@ class BookController
         return $this->bookModel->getAllbooks();
     }
 
+    public function getBookById($id)
+    {
+        return $this->bookModel->getbookbyid($id);
+      
+        return null; // Return null if book not found
+    }
+
     public function getBooksPaginated($page = 1, $limit = 10)
     {
         $offset = ($page - 1) * $limit;

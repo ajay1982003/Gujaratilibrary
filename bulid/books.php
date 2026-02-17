@@ -107,6 +107,7 @@ $book = $controller->getAllBooks();
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
+            <?php include 'includes/header.php'; ?>
 
             <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Library /</span> Books</h4>
@@ -115,14 +116,10 @@ $book = $controller->getAllBooks();
               <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h5 class="mb-0">Book List</h5>
+                
                 </div>
                 <div class="card-body">
-                  <div class="form-check form-switch">
-                      <input class="form-check-input" type="checkbox" id="languageSwitch" checked>
-                      <label class="form-check-label" for="languageSwitch">
-                        Gujarati Typing
-                      </label>
-                  </div>
+                  
                   <div class="mb-3">
                     <input type="text" id="searchBooks" class="form-control" placeholder="Search books by title, author, subject, publisher, or language..." />
                   </div>
@@ -405,6 +402,7 @@ $book = $controller->getAllBooks();
       $(document).ready(function() {
         dataTable = $('#booksTable').DataTable({
           processing: true,
+          dom: 'lrtip',
           serverSide: true,
           lengthChange: true,
           pageLength: 10,

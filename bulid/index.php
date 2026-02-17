@@ -47,6 +47,11 @@ $issueHistory = $bookissue->getissuedBooks();
     <link rel="stylesheet" href="./vendor/css/theme-default.css" class="template-customizer-theme-css" />
         <link rel="stylesheet" href="./assets/css/style.css" />
 
+    <!-- Helpers -->
+    <script src="./vendor/js/helpers.js"></script>
+    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
+    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
+    <script src="./assets/js/config.js"></script>
 </head>
 <body>
     <div class="layout-wrapper layout-content-navbar">
@@ -61,6 +66,7 @@ $issueHistory = $bookissue->getissuedBooks();
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
+            <?php include 'includes/header.php'; ?>
 
             <div class="container-xxl flex-grow-1 container-p-y">
               <!-- Welcome Banner -->
@@ -338,9 +344,22 @@ else {
       </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="./vendor/libs/bootstrap/js/bootstrap.bundle.js"></script>
+    <!-- Core JS -->
+    <!-- build:js assets/vendor/js/core.js -->
+    <script src="./vendor/libs/jquery/jquery.js"></script>
+    <script src="./vendor/libs/popper/popper.js"></script>
+    <script src="./vendor/js/bootstrap.js"></script>
+    <script src="./vendor/libs/perfect-scrollbar/perfect-scrollbar.js"></script>
     
+    <script src="./vendor/js/menu.js"></script>
+    <!-- endbuild -->
+
+    <!-- Main JS -->
+    <script src="../assets/js/main.js"></script>
+
+    <!-- Page JS -->
+    <script src="./assets/js/dashboards-analytics.js"></script>
+
     <script>
       // Category Distribution Chart
       const categoryCtx = document.getElementById('categoryChart').getContext('2d');

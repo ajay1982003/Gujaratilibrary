@@ -29,8 +29,11 @@ if (!empty($issueHistory)) {
 
         // Simple readable status
         $badgeText = ($status === 'issued')
-            ? 'Taken'
+            ? 'Issued'
             : 'Available';
+        $badgeClass = ($status === 'issued')
+            ? 'badge bg-label-warning'
+            : 'badge bg-label-success';
 
         $data[] = [
             'sr_no' => $sr_no++,
@@ -41,6 +44,8 @@ if (!empty($issueHistory)) {
             'expected_return_date' => htmlspecialchars($issue['expected_return_date'] ?? ''),
             'actual_return_date' => htmlspecialchars($issue['actual_return_date'] ?? ''),
             'status' => $badgeText,
+            'status_class' => $badgeClass,
+
             'remark' => htmlspecialchars($issue['remark'] ?? '')
         ];
     }

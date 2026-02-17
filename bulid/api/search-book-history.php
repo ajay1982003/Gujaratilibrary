@@ -22,12 +22,19 @@ if (!empty($issueHistory)) {
         $status = $issue['status'] ?? 'returned';
         $badgeClass = ($status === 'issued') ? 'bg-label-warning' : 'bg-label-success';
         $badgeText = ($status === 'issued') ? 'Issued' : 'Returned';
+        $day_used = (strtotime($issue['actual_return_date']) - strtotime($issue['issue_date'])) / (60 * 60 * 24);
+        $day_used = round($day_used);
+        $day_used = $day_used < 0 ? 0 : $day_used;
+
+
+
         $data[] = [
             'book_id' => $issue['book_id'] ?? 'N/A',
             'book_name' => htmlspecialchars($issue['book_name'] ?? 'N/A'),
             'issued_to' => htmlspecialchars($issue['issued_to'] ?? 'N/A'),
             'issued_to_contact' => htmlspecialchars($issue['issued_to_contact'] ?? 'N/A'),
             'issue_date' => htmlspecialchars($issue['issue_date'] ?? 'N/A'),
+            'day_used' => htmlspecialchars($day_used ?? 'N/A'),
             'return_date' => htmlspecialchars($issue['actual_return_date'] ?? 'N/A'),
             'status' => $badgeText,
             'status_class' => $badgeClass,

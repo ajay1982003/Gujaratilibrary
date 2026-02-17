@@ -63,6 +63,7 @@ $bookTitle = $bookbyid['vishay'] ?? 'Unknown Book';
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
+            <?php include 'includes/header.php'; ?>
 
             <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Library /</span> Books</h4>
@@ -134,7 +135,32 @@ $bookTitle = $bookbyid['vishay'] ?? 'Unknown Book';
     </div>
 
 
-    
+  
+    <!-- Return Book Modal -->
+    <div class="modal fade" id="returnBookModal" tabindex="-1" role="dialog" aria-labelledby="returnBookModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="returnBookModalLabel">Return Book</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form id="returnBookForm">
+              <input type="hidden" id="returnBookId" value="">
+              <div class="mb-3">
+                <label class="form-label" for="returnDate">પરત કરવાની તારીખ (Return Date)</label>
+                <input type="date" class="form-control" id="returnDate" required />
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <button type="button" class="btn btn-primary" onclick="submitReturnBook()">Return Book</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
 
 </body>
 </html>
@@ -148,6 +174,8 @@ $bookTitle = $bookbyid['vishay'] ?? 'Unknown Book';
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/dataTables.responsive.min.js"></script>
 <script src="https://cdn.datatables.net/responsive/2.5.0/js/responsive.bootstrap5.min.js"></script> 
 <script>
+
+ 
 
 $(document).ready(function () {
     var table = $('#booksTable').DataTable({
@@ -167,7 +195,13 @@ $(document).ready(function () {
             { data: 'issue_date' },
             { data: 'expected_return_date' },
             { data: 'actual_return_date' },
-            {  data:'status' },
+            { 
+              render: function(data, type, row) {
+                return '<span class="badge ' + row.status_class + '">' + row.status + '</span>';
+              }
+
+              
+             },
            
         ],
         language: {

@@ -48,6 +48,7 @@ $issueHistory = $bookingIssueController->getIssueHistory();
           <!-- Content wrapper -->
           <div class="content-wrapper">
             <!-- Content -->
+            <?php include 'includes/header.php'; ?>
 
             <div class="container-xxl flex-grow-1 container-p-y">
               <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Library /</span> Book History</h4>
@@ -69,9 +70,11 @@ $issueHistory = $bookingIssueController->getIssueHistory();
                         <th>Sr No</th>
                         <th>નામ (Book Name)</th>
                         <th>વપરાશીનામ (User Name)</th>
+                         <th>Status</th>
                         <th>આધુનિક (Issued On)</th>
                         <th>Return Date</th>
-                        <th>Status</th>
+                        <th>Day Used</th>
+                       
                       </tr>
                     </thead>
                    
@@ -153,6 +156,7 @@ $issueHistory = $bookingIssueController->getIssueHistory();
 
           var table = $('#historyTable').DataTable( {
             ajax: {
+                dom: 'lrtip',
                 url: './api/search-book-history.php',
                 dataSrc: 'data'
             },
@@ -161,28 +165,34 @@ $issueHistory = $bookingIssueController->getIssueHistory();
                     { data: 'book_name' },
                     { data: 'issued_to' },
                     { data: 'issue_date' },
-                    { data: 'return_date' },
                     { 
                       data: null,
                       render: function(data, type, row) {
                         if (row.status === 'Issued') {
-                          let html = '<div class="dropdown">';
-                          html += '<button type="button" class=" badge bg-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
-                          html += 'Issued';
-                          html += '</button>';
-                          html += '<ul class="dropdown-menu">';
-                          html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="openReturnModal(' + row.book_id + ')">Return Book</a></li>';
-                          html += '</ul>';
-                          html += '</div>';
-                          return html;
+                            let html = '<div class="dropdown">';
+                            html += '<button type="button" class=" badge badge-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
+                            html += 'Issued';
+                            html += '</button>';
+                            html += '<ul class="dropdown-menu">';
+                            html += '<li><a class="dropdown-item" href="javascript:void(0);" onclick="openReturnModal(' + row.book_id + ')">Return Book</a></li>';
+                            html += '</ul>';
+                            html += '</div>';
+                            return html;
                         } else {
                           return '<span class="badge ' + row.status_class + '">' + row.status + '</span>';
                         }
                       }
-                    }
+                    },
+                    { data: 'return_date' },
+                    { data:'day_used'},
+                    
             ]
         } );
-
+        
+        $('#searchHistory').on('keyup', function () {
+            table.search(this.value).draw();
+        });
+        
         window.openReturnModal = function(bookId) {
             document.getElementById('returnBookId').value = bookId;
             // Set default date to today

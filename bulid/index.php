@@ -228,13 +228,13 @@ $issueHistory = $bookissue->getIssueHistory();
                               $sr_no++;
                               $count++;
                           }
-                      } else {
-                      ?>
-                      <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No book issue history found</td>
-                      </tr>
-                      <?php
-                      }
+                        } else {
+                        ?>
+                        <tr>
+                          <td colspan="6" class="text-center text-muted py-4">No book issue history found</td>
+                        </tr>
+                        <?php
+                        }
                       ?>
                         </tbody>
                       </table>

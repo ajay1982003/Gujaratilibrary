@@ -198,7 +198,7 @@ $issueHistory = $bookissue->getissuedBooks();
                       <h5 class="card-title mb-0">તાજેતરની પુસ્તક જારીકરણ</h5>
                       <a href="book-history.php" class="btn btn-sm btn-primary">તમામ જોઈ</a>
                     </div>
-                    <div class="table-responsive text-nowrap">
+                    <div class="table-responsive text-nowrap pb-5">
                       <table class="table table-hover">
                         <thead>
                           <tr>
@@ -355,7 +355,7 @@ else {
     <!-- endbuild -->
 
     <!-- Main JS -->
-    <script src="../assets/js/main.js"></script>
+    <script src="./assets/js/main.js"></script>
 
     <!-- Page JS -->
     <script src="./assets/js/dashboards-analytics.js"></script>
@@ -440,6 +440,8 @@ else {
           }
         }
       });
+
+      
     </script>
 </body>
 </html>

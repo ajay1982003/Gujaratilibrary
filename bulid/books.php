@@ -116,7 +116,7 @@ $book = $controller->getAllBooks();
               <div class="card">
                 <div class="card-header d-flex justify-content-between align-items-center">
                   <h5 class="mb-0">Book List</h5>
-                
+                  <a href="add-book.php" class="btn btn-primary">Add Book</a>
                 </div>
                 <div class="card-body">
                   
@@ -124,12 +124,12 @@ $book = $controller->getAllBooks();
                     <input type="text" id="searchBooks" class="form-control" placeholder="Search books by title, author, subject, publisher, or language..." />
                   </div>
                 </div>
-                <div class="table-responsive text-nowrap">
+                <div class="table-responsive text-nowrap p-1">
                   <table class="table table-striped" id="booksTable">
                     <thead>
                       <tr>
                         <th>Sr No</th>
-                        <th><i class='bx bx-history'></i></th>
+                        <th>Action</th>
                         <th>નામ (Title)</th>
                         <th>ગ્રંથકાર (Author)</th>
                         <th>વિષય (Subject)</th>
@@ -421,14 +421,17 @@ $book = $controller->getAllBooks();
             {
               data: null,
               render: function(data, type, row) {
-                return '<a href="single-book-history.php?book_id=' + row.id + '" class="text-secondary" title="View History"><i class="bx bx-history bx-sm"></i></a>';
+                return '<a href="single-book-history.php?book_id=' + row.id + '" class="text-secondary" title="View History"><i class="bx bx-history bx-sm"></i></a>'+
+                '<a href="update-book.php?book_id=' + row.id + '" class="text-waring" title="Edit Book"><i class="bx bx-edit bx-sm"></i></a>'+
+                '<a href="delete-book.php?book_id=' + row.id + '" class="text-danger" title="Delete Book" onclick="return confirm(\'Are you sure you want to delete this book?\')"><i class="bx bx-trash bx-sm"></i></a>'
+                ;
               },
               orderable: false
             },
             { data: 'naam' },
             { data: 'granthkar' },
             { data: 'subject_name' },
-            { data: 'prakashak' },
+            {data: 'prakashak'},
             {
               data: null,
               render: function(data, type, row) {
@@ -488,37 +491,4 @@ $book = $controller->getAllBooks();
 </body>
 </html>
 
-<script src="https://www.google.com/jsapi"></script>
 
-<script>
-google.load("elements", "1", {
-  packages: "transliteration"
-});
-
-let transliterationControl;
-
-function onLoad() {
-
-  const options = {
-    sourceLanguage: 'en',
-    destinationLanguage: ['gu'],
-    transliterationEnabled: true
-  };
-
-  transliterationControl =
-    new google.elements.transliteration.TransliterationControl(options);
-
-  transliterationControl.makeTransliteratable(['searchBooks']);
-}
-
-google.setOnLoadCallback(onLoad);
-
-
-// Switch ON/OFF logic
-document.getElementById('languageSwitch')
-  .addEventListener('change', function () {
-
-    transliterationControl.enableTransliteration(this.checked);
-
-});
-</script>

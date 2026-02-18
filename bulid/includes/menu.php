@@ -51,14 +51,15 @@ $email = SessionHelper::getUserEmail();
         <div>Book History</div>
       </a>
     </li>
-<!-- 
-    <li class="menu-item">
+    <?php if (SessionHelper::isLibrarian()): ?>
+    <li class="menu-item <?php echo basename($_SERVER['PHP_SELF']) == 'users.php' ? 'active' : ''; ?>">
       <a href="users.php" class="menu-link">
         <i class="menu-icon tf-icons bx bx-user"></i>
         <div>Users</div>
       </a>
-    </li> -->
-
+    </li>
+    <?php
+endif; ?> 
   </ul>
 </aside>
 <!-- / Menu -->

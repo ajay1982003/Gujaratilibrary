@@ -46,18 +46,31 @@ class BookController
 
     public function addBook($data)
     {
-        // Basic sanitization
-        $cleanData = [
-            'naam' => trim($data['naam']),
-            'granthkar' => trim($data['granthkar']),
-            'subject_name' => trim($data['subject_name']),
-            'prakashak' => trim($data['prakashak']),
-            'bhasha' => trim($data['bhasha']),
-            'pages' => intval($data['pages']),
-            'categoryName' => trim($data['categoryName'])
+        // Define all expected fields with default empty string or null
+        $defaults = [
+            'excel_iD' => null, 'sr_no' => null, 'categoryName' => null,
+            'vishay' => null, 'old_sub_id' => null, 'new_sub_id' => null, 'new_sub_id_2901' => null,
+            'subject_name' => '', 'naam' => '', 'name1' => null, 'name2' => null, 'name3' => null, 'name4' => null,
+            'granthkar' => '', 'granthkar_0811' => null,
+            'punah_granthkar' => null, 'punah_granthkar_0811' => null,
+            'teekakar' => null, 'teekakar_0811' => null,
+            'anuvadak' => null, 'anuvadak_0811' => null,
+            'sampadak' => null, 'sampadak_0811' => null,
+            'punah_sampadak' => null, 'punah_sampadak_0811' => null,
+            'prakashak' => '', 'prakashak_0811' => null,
+            'purva_prakashak' => null, 'purva_prakashak_0811' => null,
+            'bhasha' => null, 'pages' => 0, 'shelf_detail' => '', 'remark' => null
         ];
 
-        if ($this->bookModel->addBook($cleanData)) {
+        // Merge defaults with provided data
+        $bookData = array_merge($defaults, array_intersect_key($data, $defaults));
+
+        // Basic validation for required fields
+        if (empty($bookData['naam'])) {
+            return ['success' => false, 'message' => 'Book Name (Naam) is required'];
+        }
+
+        if ($this->bookModel->addBook($bookData)) {
             return ['success' => true, 'message' => 'Book added successfully'];
         }
         else {
@@ -65,6 +78,42 @@ class BookController
         }
     }
 
+    public function updateBook($data)
+    {
+        $defaults = [
+            'excel_iD' => null, 'sr_no' => null, 'categoryName' => null,
+            'vishay' => null, 'old_sub_id' => null, 'new_sub_id' => null, 'new_sub_id_2901' => null,
+            'subject_name' => '', 'naam' => '', 'name1' => null, 'name2' => null, 'name3' => null, 'name4' => null,
+            'granthkar' => '', 'granthkar_0811' => null,
+            'punah_granthkar' => null, 'punah_granthkar_0811' => null,
+            'teekakar' => null, 'teekakar_0811' => null,
+            'anuvadak' => null, 'anuvadak_0811' => null,
+            'sampadak' => null, 'sampadak_0811' => null,
+            'punah_sampadak' => null, 'punah_sampadak_0811' => null,
+            'prakashak' => '', 'prakashak_0811' => null,
+            'purva_prakashak' => null, 'purva_prakashak_0811' => null,
+            'bhasha' => null, 'pages' => 0, 'shelf_detail' => '', 'remark' => null
+        ];
 
+        // Merge defaults with provided data
+        $bookData = array_merge($defaults, array_intersect_key($data, $defaults));
+
+        // Basic validation for required fields
+        if (empty($bookData['naam'])) {
+            return ['success' => false, 'message' => 'Book Name (Naam) is required'];
+        }
+
+        if ($this->bookModel->updateBook($bookData)) {
+            return ['success' => true, 'message' => 'Book updated successfully'];
+        }
+        else {
+            return ['success' => false, 'message' => 'Failed to update book'];
+        }
+    }
+
+    public function deleteBook($id)
+    {
+        return $this->bookModel->deleteBook($id);
+    }
 }
 ?>

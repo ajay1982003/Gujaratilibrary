@@ -30,7 +30,7 @@ if (!empty($issueHistory)) {
         // Simple readable status
         $badgeText = ($status === 'issued')
             ? 'Issued'
-            : 'Available';
+            : 'Returned';
         $badgeClass = ($status === 'issued')
             ? 'badge bg-label-warning'
             : 'badge bg-label-success';

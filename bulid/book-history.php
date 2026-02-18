@@ -63,7 +63,7 @@ $issueHistory = $bookingIssueController->getIssueHistory();
                     <input type="text" id="searchHistory" class="form-control" placeholder="Search by book name, user name, or status..." />
                   </div>
                 </div>
-                <div class="table-responsive text-nowrap">
+                <div class="table-responsive text-nowrap p-1">
                   <table class="table table-striped" id="historyTable">
                     <thead>
                       <tr>
@@ -155,8 +155,9 @@ $issueHistory = $bookingIssueController->getIssueHistory();
         $('document').ready(function(){
 
           var table = $('#historyTable').DataTable( {
+            dom: 'rtip',
             ajax: {
-                dom: 'lrtip',
+              
                 url: './api/search-book-history.php',
                 dataSrc: 'data'
             },
@@ -170,7 +171,7 @@ $issueHistory = $bookingIssueController->getIssueHistory();
                       render: function(data, type, row) {
                         if (row.status === 'Issued') {
                             let html = '<div class="dropdown">';
-                            html += '<button type="button" class=" badge badge-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">';
+                            html += '<button type="button" class="badge bg-label-warning dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false" style="border:none; cursor:pointer;">';
                             html += 'Issued';
                             html += '</button>';
                             html += '<ul class="dropdown-menu">';

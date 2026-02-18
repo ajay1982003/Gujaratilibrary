@@ -133,5 +133,11 @@ class SessionHelper
         unset($_SESSION['success']);
         return $success;
     }
+
+    public static function isLibrarian()
+    {
+        self::startSession();
+        return $_SESSION['email'] === 'admin@gmail.com';
+    }
 }
 ?>
